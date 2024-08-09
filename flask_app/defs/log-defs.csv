@@ -1,0 +1,20 @@
+log,log_desc,log_desc_name,log_tags
+maintenance,Ornt,Instrument Oriented,"WSWD,CellAnt,SolarPanel"
+maintenance,Lvl,Instrument Level,"Rnet,WSWD,RF"
+maintenance,Clean,Instrument Clean,"Rnet,RF,TRH,Panel"
+maintenance,TRH_head,New Sensor Head,TRH
+maintenance,Veg,Clear Vegitation,Station
+maintenance,Dssc,Replace Desiccant,Station
+maintenance,Paint,Paint Logger Box,Station
+maintenance,Seal,Reseal Box,Station
+maintenance,Data,Collect SD Card Data,Station
+maintenance,Clock,Set Time,Station
+site_iss,L_wire,Loose Wire,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard"
+site_iss,Lvl_inst,Instrument not Level,"Rnet,WSWD,RF"
+site_iss,Ornt_inst,Instrument not Oriented,"WSWD,CellAnt,SolarPanel"
+site_iss,Clean_inst,Instrument Fouling,"Rnet,RF,TRH,Panel"
+inst_iss,Dmg_inst,Instrument Damaged,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard"
+inst_iss,D_wire,Damaged Wire,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard"
+site_iss,Bugs,Bugs,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard"
+site_iss,Other,Other,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard"
+inst_iss,Other,Other,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard"

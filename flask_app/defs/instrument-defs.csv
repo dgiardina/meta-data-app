@@ -1,0 +1,18 @@
+inst_id,inst_name,inst_mdl,inst_verification
+Rnet,Net Radiometer,NR01,"^NR01\/\d{4}/\d{1,2}\.\d{2}(,\d{1,2}\.\d{2}){3}$"
+WSWD,Wind Speed & Direction,RMY01508,^RMY01508\/WM\d{6}$
+TRH,Temperature & Relative Humidity,HygroVUE,^HygroVUE\/E\d{4}$
+RF,Rainfall Gauge,RainVUE,^RainVUE\/\d{6}$
+Logger,Data Logger,"CR1000X,CR3000","^CR1000X\/\d{5}/$,^CR3000\/\d{5}$"
+SM,Soil Moisture,CS650,^CS650\/\d{5}$
+Tsoil,Soil Temperature,TCAV,^TCAV\/\d{4}$
+SHF,Soil Heat Flux,HFP01,"^HFPF01\/\d{5}/\d{1,2}\.\d{2}$"
+ChargeReg,Charge Regulator,CH201,^CH201\/\d{4}$
+Battery,Battery,26Ah,^26Ah\/\d{4}$
+SolarPanel,Solar Panel,20W,^20W\/\d{4}$
+RHenc,Enclosure Humidity,CS210,^CS210\/\d{4}$
+CellAnt,Cell Antenna,"MIMO38485,Omni32262","^MIMO38485\/\d{4}/$,^Omni32262\/\d{4}$"
+CellMdm,Cell Modem,"Cell205,Cell210","^Cell205\/\d{5}/$,^Cell210\/\d{5}$"
+Baro,Pressure Sensor,BaroVUE,^BaroVUE\/\d{4}$
+BVCard,Barometric Pressure Card,BCV10,^BCV10\/\d{4}$
+Station,General Mainteance,,
