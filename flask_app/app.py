@@ -58,6 +58,11 @@ def meta_sheet_to_df():
         worksheet = sh.get_worksheet(2)
         df = pd.DataFrame(worksheet.get_all_records())
         df.to_csv('defs/project-techs.csv', index=False)
+
+        worksheet = sh.get_worksheet(4)
+        df = pd.DataFrame(worksheet.get_all_records())
+        df.to_csv('defs/station-list.csv', index=False)
+        
     except:
         print('newp')
 
@@ -594,18 +599,27 @@ def dropdown_tech():
 def dropdown_station():
     try:
 
-        stations = get_stations()
-        station_options = [{'label': station['site_id']+ ' ' + station['site_name'], 'value': station['site_id']+ '_' + station['site_name']} for station in stations]
-        df = pd.DataFrame(station_options)
-        df.sort_values(by='value',inplace=True)
+        # stations = get_stations()
+        
+        # station_options = [{'label': station['site_id']+ ' ' + station['site_name'], 'value': station['site_id']+ '_' + station['site_name']} for station in stations]
+        # df = pd.DataFrame(station_options)
+        # df.sort_values(by='value',inplace=True)
         
 
+        # dropdown = dcc.Dropdown(id='dropdown-stations', 
+        #     options=[{'label' : html.Div(i, style={'font-size': 15}), 'value' : j } for i,j in zip(df['label'],df['value'])],value = df['value'].iloc[0],
+        # clearable=False,
+        # optionHeight=50)
+
+        df = pd.read_csv('defs/station-list.csv')
         dropdown = dcc.Dropdown(id='dropdown-stations', 
             options=[{'label' : html.Div(i, style={'font-size': 15}), 'value' : j } for i,j in zip(df['label'],df['value'])],value = df['value'].iloc[0],
         clearable=False,
         optionHeight=50)
+        
         return dropdown
     except: 
+        print('newp')
         return dcc.Dropdown(value=None,id='dropdown-stations')
 
 

@@ -1,7 +1,7 @@
 log,log_desc,log_desc_name,log_tags
-maintenance,Ornt,Instrument Oriented,"WSWD,CellAnt,SolarPanel"
+maintenance,Ornt,Instrument Oriented,WSWD
 maintenance,Lvl,Instrument Level,"Rnet,WSWD,RF"
-maintenance,Clean,Instrument Clean,"Rnet,RF,TRH,Panel"
+maintenance,Clean,Instrument Clean,"Rnet,RF,TRH"
 maintenance,TRH_head,New Sensor Head,TRH
 maintenance,Veg,Clear Vegitation,Station
 maintenance,Dssc,Replace Desiccant,Station
