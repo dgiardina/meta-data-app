@@ -1,7 +1,7 @@
 inst_id,inst_name,inst_mdl,inst_verification
 Rnet,Net Radiometer,NR01,"^NR01\/\d{4}/\d{1,2}\.\d{2}(,\d{1,2}\.\d{2}){3}$"
 WSWD,Wind Speed & Direction,"RMY01508,RMY05106","^RMY01508\/WM\d{6},^RMY05106\/\d{4}$"
-TRH,Temperature & Relative Humidity,"HygroVUE,HMP45C","^HygroVUE\/E\d{4},^HMP45C\/\d{5}$"
+TRH,Temperature & Relative Humidity,"HygroVUE,HMP45C","^HygroVUE/E\d{4},^HMP45C\/\d{5}$"
 RF,Rainfall Gauge,RainVUE,^RainVUE\/\d{6}$
 Logger,Data Logger,"CR1000X,CR3000","^CR1000X\/\d{5}/$,^CR3000\/\d{5}$"
 SM,Soil Moisture,CS650,^CS650\/\d{5}$

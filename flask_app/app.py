@@ -38,21 +38,21 @@ def meta_sheet_to_df():
         worksheet = sh.get_worksheet(0)
         df = pd.DataFrame(worksheet.get_all_records())
         df.to_csv('defs/log-defs.csv', index=False)
-        # print('a')
+        
         
         worksheet = sh.get_worksheet(1)
         df = pd.DataFrame(worksheet.get_all_records())
         df.to_csv('defs/instrument-defs.csv', index=False)
-        # print('b')
+        
 
         worksheet = sh.get_worksheet(2)
         df = pd.DataFrame(worksheet.get_all_records())
         df.to_csv('defs/project-techs.csv', index=False)
-        # print('c')
+        
         worksheet = sh.get_worksheet(4)
         df = pd.DataFrame(worksheet.get_all_records())
         df.to_csv('defs/station-list.csv', index=False)
-        # print('d')
+        
     except:
         print('newp')
 
@@ -100,11 +100,11 @@ def gen_inst_df(df):
         df['report'] = latest_report + 1# populate report      
         
         df.index = range(len(df.index))
-        # print(df)
+        
         df_map_todict = df_map.set_index('inst_id') 
-        # print(df_map_todict)
+        
         map_dict = df_map_todict.to_dict('index')
-        # print(map_dict)
+        
         for i in range(len(df)):
             try:
                 inst = df['inst_id'][i].rstrip('_1234567890')      
@@ -193,7 +193,7 @@ class instrument_mtn:
             return checklist_inst_mtn
         
     def dt_inst_mtn_id(self):
-        id = {'type': 'dt-start-sta-iss', 'index': self.id}
+        id = {'type': 'dt-start-inst-mtn', 'index': self.id}
         return id
     
     def yn_inst_mtn_id(self):
@@ -252,11 +252,12 @@ class instrument_mtn:
                             id = {'type':'div-sn-mtn' , 'index': self.id}),
                     ]),
                 ]),
-                dbc.Row((html.Hr(style={'borderWidth': ".2vh", "width": "100%", "borderColor": "#6666ff","borderStyle":"solid"})),),
+                dbc.Row((html.Hr(style={'borderWidth': ".1vh", "width": "100%", "borderColor": "#6666ff","borderStyle":"solid"})),),
                 dbc.Row([
                     dbc.Col([self.checklist_inst_mtn_1()]),
                     dbc.Col([self.checklist_inst_mtn_2()]),
                 ]),
+                dbc.Row((html.Hr(style={'borderWidth': ".1vh", "width": "100%", "borderColor": "#6666ff","borderStyle":"solid"})),),
                 dbc.Row([dcc.RadioItems(['No Impact on Data','Data Affected'],'No Impact on Data',inline=True, labelStyle= {"width":"13rem"}, id = self.yn_inst_mtn_id())]),
                 html.Div([
                 dbc.Row([
@@ -358,6 +359,26 @@ class instrument_swap:
         id = {'type': 'input-inst-swap-coef', 'index': self.id}
         return id
     
+    def dt_inst_swap_id(self):
+        id = {'type': 'dt-start-inst-swap', 'index': self.id}
+        return id
+      
+    def hh_start_inst_swap_id(self):
+        id = {'type': 'hh-start-inst-swap', 'index': self.id}
+        return id
+    
+    def hh_end_inst_swap_id(self):
+        id = {'type': 'hh-end-inst-swap', 'index': self.id}
+        return id
+    
+    def mm_start_inst_swap_id(self):
+        id = {'type': 'mm-start-inst-swap', 'index': self.id}
+        return id
+    
+    def mm_end_inst_swap_id(self):
+        id = {'type': 'mm-end-swap-mtn', 'index': self.id}
+        return id
+    
     def input_inst_swap_desc_id(self):
         id = {'type': 'input-inst-swap-desc', 'index': self.id}
         return id
@@ -390,7 +411,7 @@ class instrument_swap:
                                  id = {'type':'div-sn-mtn' , 'index': self.id}),
                     ]),
                 ]),
-                dbc.Row((html.Hr(style={'borderWidth': ".2vh", "width": "100%", "borderColor": "#6666ff","borderStyle":"solid"})),),
+                dbc.Row((html.Hr(style={'borderWidth': ".1vh", "width": "100%", "borderColor": "#6666ff","borderStyle":"solid"})),),
                 dbc.Row([
                     dbc.Col([dbc.Label('New Model:')]),
                     dbc.Col([self.dropdown_inst_swap_mdl()]),
@@ -407,6 +428,36 @@ class instrument_swap:
                     dbc.Col([dcc.Input(id=self.input_inst_swap_coef_id(),value=self.coef)]),
                     ]),  
                 ], id = self.input_inst_swap_coef_sh_id()),
+                dbc.Row((html.Hr(style={'borderWidth': ".1vh", "width": "100%", "borderColor": "#6666ff","borderStyle":"solid"})),),
+                dbc.Row([
+                    dbc.Col([html.Label('Swap Date')],width = 5),
+                    dbc.Col([html.Label('Swap Start Time')])
+                ]),
+                
+                dbc.Row([
+                    dbc.Col([
+                    dcc.DatePickerSingle(
+                        id=self.dt_inst_swap_id(),
+                        min_date_allowed=date(1950, 1, 1),
+                        max_date_allowed= dt.date.today()+ timedelta(days=1),
+                        initial_visible_month=dt.date.today(),
+                        date=dt.date.today())
+                    ],width = 5),
+                    dbc.Col([dbc.Input(id=self.hh_start_inst_swap_id(), type='number', min=0, max=23, step=1, value = datetime.today().hour, size="md",valid = False)],width = 3),
+                    dbc.Col([html.H4(':')],width = 1),
+                    dbc.Col([dbc.Input(id=self.mm_start_inst_swap_id(), type='number', min=0, max=59, step=1, value = datetime.today().minute, size="md",valid = False)],width = 3),
+                ]),
+                dbc.Row([
+                    dbc.Col([],width = 5),
+                    dbc.Col([html.Label('Swap End Time')])
+                ]),
+                dbc.Row([
+                    dbc.Col([],width = 5),
+                    dbc.Col([dbc.Input(id=self.hh_end_inst_swap_id(), type='number', min=0, max=23, step=1, value = datetime.today().hour, size="md",valid = False)],width = 3),
+                    dbc.Col([html.H4(':')],width = 1),
+                    dbc.Col([dbc.Input(id=self.mm_end_inst_swap_id(), type='number', min=0, max=59, step=1, value = datetime.today().minute, size="md",valid = False)],width = 3),
+                ]),
+
                 dbc.Row([dbc.Label('Notes:')]),
                 dbc.Row([dcc.Input(id = self.input_inst_swap_desc_id())])
             ]),
@@ -516,7 +567,7 @@ class station_issue:
                                  id = {'type':'div-sn-mtn' , 'index': self.id}),
                     ]),
                 ]),
-                dbc.Row((html.Hr(style={'borderWidth': ".2vh", "width": "100%", "borderColor": "#6666ff","borderStyle":"solid"})),),
+                dbc.Row((html.Hr(style={'borderWidth': ".1vh", "width": "100%", "borderColor": "#6666ff","borderStyle":"solid"})),),
                 dbc.Row([dbc.Col([dbc.Label('Issue Type:')]),dbc.Col([dbc.Label('Issue Status:')])]),
                 dbc.Row([
                     dbc.Col([dcc.RadioItems(options = [
@@ -530,7 +581,7 @@ class station_issue:
                         value = 'cont', inline=False,labelStyle={'display': 'block',},
                         id = self.yn_sta_iss_id())]),
                     ]),
-                    html.Br(),
+                dbc.Row((html.Hr(style={'borderWidth': ".1vh", "width": "100%", "borderColor": "#6666ff","borderStyle":"solid"})),),
                 dbc.Row([dbc.Label('Station Issue(s):')]),
                 dbc.Row([dcc.Dropdown(id = self.dropdown_sta_iss_log_id(), multi = True)]),
                 dbc.Row([
@@ -700,9 +751,9 @@ def gen_inst_mtn_cards(station):
     [Input('dropdown-stations', 'value')])
 
 def gen_inst_mtn_cards(station): 
-    print(station)
+    
     [df, df_old] = gen_inst_df(sheet_to_df(station))
-    print(df)
+    
     return df.to_json()
 
 
@@ -1014,8 +1065,6 @@ def show_hide_element(sta_data):
 
 def show_hide_element(sta_data, inst_id): 
     df = pd.read_json(StringIO(sta_data))
-    # print(df)
-    # print(inst_id)
     try:
         if isinstance(inst_id, str):
             inst_id =[inst_id]
@@ -1074,23 +1123,50 @@ def show_hide_element(value):
     [Input(component_id={'type': 'store-ht-swap'  , 'index': MATCH}, component_property='data')],
     [Input(component_id={'type': 'store-pos-swap'  , 'index': MATCH}, component_property='data')],
     [Input(component_id={'type':  inst_swap.input_inst_swap_desc_id()['type'] , 'index': MATCH}, component_property='data')],
+    [Input(component_id={'type': inst_swap.dt_inst_swap_id()['type'], 'index': MATCH}, component_property='date')],
+    [Input(component_id={'type': inst_swap.hh_start_inst_swap_id()['type'], 'index': MATCH}, component_property='value')],
+    [Input(component_id={'type': inst_swap.hh_end_inst_swap_id()['type'], 'index': MATCH}, component_property='value')],
+    [Input(component_id={'type': inst_swap.mm_start_inst_swap_id()['type'], 'index': MATCH}, component_property='value')],
+    [Input(component_id={'type': inst_swap.mm_end_inst_swap_id()['type'], 'index': MATCH}, component_property='value')],
     )
 
-def show_hide_element(mdl_swap,sn_swap,coef_swap,report,inst,mdl,sn,coef,ht,pos,log_description):
+def show_hide_element(mdl_swap,sn_swap,coef_swap,report,inst,mdl,sn,coef,ht,pos,log_description,log_dt,log_start_hh,log_end_hh,log_start_mm,log_end_mm):
 
     if mdl_swap == None:
         d = {'report': [None], 'inst_id': [None],'inst_mdl': [None],'inst_sn': [None],'inst_coef': [None],'inst_ht': [None],'inst_pos': [None],'log':[None],'log_desc': [None],'log_start' : [None], 'log_end' : [None], 'log_description': [None]}
         df = pd.DataFrame(d, index=[0])
     else:
+        if log_dt is None:
+            log_start = None
+        elif log_start_hh is None:
+            log_start = None
+        elif log_start_mm is None:
+            log_start = None
+        else:
+            time_str = str(log_start_hh).zfill(2) +':' + str(log_start_mm).zfill(2) + ':00'
+            log_start = log_dt+ ' ' + time_str
+        
+
+        if log_dt is None:
+            log_end = None
+        elif log_end_hh is None:
+            log_end = None
+        elif log_end_mm is None:
+            log_end = None
+        else:
+            time_str = str(log_end_hh).zfill(2) +':' + str(log_end_mm).zfill(2) + ':00'
+            log_end = log_dt+ ' ' + time_str
+
         if 'None' in coef_swap:
             log_desc = mdl_swap + '/' + sn_swap 
         else:
             log_desc = mdl_swap + '/' + sn_swap +'/'+coef_swap
-        # report = int(report.strip('""'))+1
+        
+        print(log_desc)
         report = str(report)
-        d = {'report': report, 'inst_id': inst,'inst_mdl': mdl,'inst_sn': sn, 'inst_coef': coef, 'inst_ht': ht,'inst_pos': pos, 'log': 'inst_swap','log_desc': log_desc,'log_start' : [None], 'log_end' : [None], 'log_description': log_description}
+        d = {'report': report, 'inst_id': inst,'inst_mdl': mdl,'inst_sn': sn, 'inst_coef': coef, 'inst_ht': ht,'inst_pos': pos, 'log': 'inst_swap','log_desc': log_desc,'log_start' : log_start, 'log_end' : log_end, 'log_description': log_description}
         df = pd.DataFrame(data = d, index=[0])
-
+        
     return df.to_json()
 
 
@@ -1241,7 +1317,7 @@ def show_hide_element(n_clicks, data_log, sta):
     df_new['report'] = df1['report'][0]
     cond_agg = pd.Series([False] * len(df_new.index))
     for i in range(len(df1.index)):
-        # print(df_new)
+        
         cond = df_new['inst_id'] == df1['inst_id'][i]
         cond_agg = cond_agg | cond
 
@@ -1253,10 +1329,9 @@ def show_hide_element(n_clicks, data_log, sta):
 
     df_new.drop(['inst_name'],axis = 1, inplace = True)
     df_new = df_new.loc[cond_agg]
-    # print(df_new)
-    
+        
     df = pd.concat([df2,df1,df_new], axis = 0)
-    # df = pd.concat([df1,df_new], axis = 0)
+    
     df.replace('',None,inplace = True)
     df = df.replace({np.nan: None})
     
@@ -1500,9 +1575,8 @@ def show_hide_element(sta_iss,dt_single_log,hh_log,mm_log,sta,tech):
             df.insert(1,'site_id',sta[0:4])
             df.insert(1,'site_name',sta)
             df.insert(1,'tech',tech)
-            
             df.insert(0,'report_at',dt_single_log)
-            # print(df)
+
             return df.to_json()
         
 @app.callback(
