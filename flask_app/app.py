@@ -1,23 +1,27 @@
 import gspread
 import dash
 import dash_bootstrap_components as dbc
-from dash import Input, Output, State, dcc, html, Dash, dash_table, ALL, MATCH
+from dash import Input, Output, State, dcc, html, ALL, MATCH
 from dash.exceptions import PreventUpdate
+import dash_auth
 
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
-import requests
 from datetime import datetime, timedelta, date
 import datetime as dt
 import json
 from io import StringIO
 import re
-import credentials
 from flask import Flask
+import os
+from dotenv import load_dotenv
+import ast
 
-
-gc = gspread.service_account_from_dict(credentials.JSON)
+load_dotenv()
+GC_JSON = os.getenv('GC_JSON')
+USER_PWD = os.getenv('USER_PWD')
+gc = gspread.service_account_from_dict(ast.literal_eval(GC_JSON))
 
 def sheet_to_df(sheet):
     try:
@@ -93,10 +97,14 @@ def gen_inst_df(df):
         df_old = df.copy()
         latest_report = df['report'].max() # get latest report
         df = df[df['log'] == 'metadata'].drop_duplicates(subset='inst_id', keep='last') # only keep last instance of metadata for each instrument
-        df['report'] = latest_report # populate report      
+        df['report'] = latest_report + 1# populate report      
+        
         df.index = range(len(df.index))
+        # print(df)
         df_map_todict = df_map.set_index('inst_id') 
+        # print(df_map_todict)
         map_dict = df_map_todict.to_dict('index')
+        # print(map_dict)
         for i in range(len(df)):
             try:
                 inst = df['inst_id'][i].rstrip('_1234567890')      
@@ -567,8 +575,6 @@ class station_issue:
         ])
         return card
 
-
-
 # Fetch stations on app startup to populate the dropdown
 def dropdown_tech():
     try:
@@ -662,6 +668,10 @@ header = dbc.Card([
 server = Flask(__name__)
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],suppress_callback_exceptions=True, use_pages=True,server=server)
 
+auth = dash_auth.BasicAuth(
+    app, ast.literal_eval(USER_PWD)
+)
+
 app.layout = dbc.Container([
     dbc.Stack([
         
@@ -690,16 +700,12 @@ def gen_inst_mtn_cards(station):
     [Input('dropdown-stations', 'value')])
 
 def gen_inst_mtn_cards(station): 
+    print(station)
     [df, df_old] = gen_inst_df(sheet_to_df(station))
+    print(df)
     return df.to_json()
 
-@app.callback(
-    Output('init-store-df-old','data'),
-    [Input('dropdown-stations', 'value')])
 
-def gen_inst_mtn_cards(station): 
-    [df, df_old] = gen_inst_df(sheet_to_df(station))
-    return df_old.to_json()
 #%% Mtn Callbacks
 
 @app.callback(
@@ -794,7 +800,7 @@ def show_hide_element(value):
     )
 
 def show_hide_element(log_desc_1, log_desc_2,log_description,report,inst,mdl,sn,coef,ht,pos,yn_data,log_dt,log_start_hh,log_end_hh,log_start_mm,log_end_mm):
-
+    
     if log_desc_1 == None and log_desc_2 == None:
         d = {'report': [None], 'inst_id': [None],'inst_mdl': [None],'inst_sn': [None],'inst_coef': [None],'inst_ht': [None],'inst_pos': [None],'log':[None],'log_desc': [None],'log_start' : [None], 'log_end' : [None], 'log_description': [None]}
         df = pd.DataFrame(d, index=[0])
@@ -836,10 +842,11 @@ def show_hide_element(log_desc_1, log_desc_2,log_description,report,inst,mdl,sn,
             log_end = None
 
 
-        report = int(report.strip('""'))+1
+        # report = int(report.strip('""'))+1
         report = str(report)
         d = {'report': report, 'inst_id': inst,'inst_mdl': mdl,'inst_sn': sn, 'inst_coef': coef, 'inst_ht': ht,'inst_pos': pos, 'log': 'gen_mtn','log_desc': log_desc,'log_start' : log_start, 'log_end' : log_end, 'log_description': log_description}
         df = pd.DataFrame(data = d, index=[0])
+        
         
     return df.to_json()
 
@@ -875,7 +882,7 @@ def show_hide_element(log_desc,dt_single_log,hh_log,mm_log,sta,tech):
         df = df.replace({np.nan: None})
         df = df.dropna(subset = ['inst_id'])
         df.index = range(len(df.index))
-
+        
         if df.empty:
             return None
         else:
@@ -950,14 +957,14 @@ def show_hide_element(data):
     [Input(component_id='button-inst-mtn', component_property='n_clicks')],
     [State(component_id=inst_mtn.store_inst_mtn_all_id(), component_property='data')],
     [State(component_id='dropdown-stations', component_property='value')],
-    [State(component_id='init-store-df-old', component_property='data')],
+    # [State(component_id='init-store-df-old', component_property='data')],
     prevent_initial_call=True)
 
-def show_hide_element(n_clicks, data_log, sta,sta_data):
+def show_hide_element(n_clicks, data_log, sta):
     df1 = pd.read_json(StringIO(data_log))
     
-
-    df2 = pd.read_json(StringIO(sta_data))
+    [df, df2] = gen_inst_df(sheet_to_df(sta))
+    
     df = pd.concat([df2,df1], axis = 0)
     df.replace('',None,inplace = True)
     df = df.replace({np.nan: None})
@@ -994,8 +1001,7 @@ def show_hide_element(sta_data):
         
         df = df.iloc[1:]
         value = df['inst_id'].iloc[0]
-        # print(df)
-        print(value)
+
         return value
     except:
         return None
@@ -1017,11 +1023,10 @@ def show_hide_element(sta_data, inst_id):
             inst_id = inst_id
         instrument_list = []
         for i in range(len(inst_id)):
-            print(inst_id[i])
+            
             df2 = df[df['inst_id'] == inst_id[i]].copy()
             a = df2.iloc[0].to_list()  
-            
-            print(df2)
+
             instrument_list.append(instrument_swap(a[1], a[5], a[6], a[7], a[8], a[9], a[10], a[16]))
 
         div = html.Div([
@@ -1081,7 +1086,7 @@ def show_hide_element(mdl_swap,sn_swap,coef_swap,report,inst,mdl,sn,coef,ht,pos,
             log_desc = mdl_swap + '/' + sn_swap 
         else:
             log_desc = mdl_swap + '/' + sn_swap +'/'+coef_swap
-        report = int(report.strip('""'))+1
+        # report = int(report.strip('""'))+1
         report = str(report)
         d = {'report': report, 'inst_id': inst,'inst_mdl': mdl,'inst_sn': sn, 'inst_coef': coef, 'inst_ht': ht,'inst_pos': pos, 'log': 'inst_swap','log_desc': log_desc,'log_start' : [None], 'log_end' : [None], 'log_description': log_description}
         df = pd.DataFrame(data = d, index=[0])
@@ -1215,19 +1220,22 @@ def show_hide_element(data):
     else: 
         return 'Log ready to submit!'
 
+
+
 @app.callback(
     Output(component_id='submit-text-swap', component_property='children'),
     [Input(component_id='button-inst-swap', component_property='n_clicks')],
     [State(component_id=inst_swap.store_inst_swap_all_id(), component_property='data')],
     [State(component_id='dropdown-stations', component_property='value')],
-    [State(component_id='init-store-df', component_property='data')],
-    [State(component_id='init-store-df-old', component_property='data')],
+    # [State(component_id='init-store-df', component_property='data')],
+    # [State(component_id='init-store-df-old', component_property='data')],
     prevent_initial_call=True)
 
-def show_hide_element(n_clicks, data_log, sta,sta_data,sta_data_old):
+def show_hide_element(n_clicks, data_log, sta):
     df1 = pd.read_json(StringIO(data_log))
-    df_new = pd.read_json(StringIO(sta_data))
-    df2 = pd.read_json(StringIO(sta_data_old))
+    # df_new = pd.read_json(StringIO(sta_data))
+    [df_new, df2] = gen_inst_df(sheet_to_df(sta))
+    # df2 = pd.read_json(StringIO(sta_data_old))
     df_new['tech'] = df1['tech'][0]
     df_new['report_at'] = df1['report_at'][0]
     df_new['report'] = df1['report'][0]
@@ -1263,7 +1271,7 @@ def show_hide_element(n_clicks, data_log, sta,sta_data,sta_data_old):
         return 'Submission Successful!'
     except:
         return 'Nope :('
-    
+
 
 #%% Site Issue Callbacks
 
@@ -1435,13 +1443,13 @@ def show_hide_element(log_iss,log_yn,log_desc,log_start_dt,log_end_dt,log_start_
     
     else:
         if log_yn == 'cont':
-            report = int(report.strip('""'))+1
+            # report = int(report.strip('""'))+1
             report = str(report)
             d = {'report': report, 'inst_id': inst,'inst_mdl': mdl,'inst_sn': sn, 'inst_coef': coef, 'inst_ht': ht,'inst_pos': pos, 'log': log,'log_desc': log_desc,'log_start' : log_start, 'log_end' : [None], 'log_description': log_description}
             df = pd.DataFrame(data = d, index=[0])
             return df.to_json()
         elif log_yn == 'res':
-            report = int(report.strip('""'))+1
+            # report = int(report.strip('""'))+1
             report = str(report)
             d = {'report': report, 'inst_id': inst,'inst_mdl': mdl,'inst_sn': sn, 'inst_coef': coef, 'inst_ht': ht,'inst_pos': pos, 'log': log,'log_desc': log_desc,'log_start' : log_start, 'log_end' : log_end, 'log_description': log_description}
             df = pd.DataFrame(data = d, index=[0])
@@ -1537,8 +1545,6 @@ def show_hide_element(inst_log,dt_single_log,hh_log,mm_log,tech):
         for index, row in df.iterrows():
             if row['log'][9:] == 'res' and pd.isna(row['log_end']):
                 df_bool['bool'][6] = 1
-        
-        print(df_bool)
         return df_bool.to_json()
     
 @app.callback(
@@ -1572,12 +1578,13 @@ def show_hide_element(data):
     [Input(component_id='button-sta-iss', component_property='n_clicks')],
     [State(component_id=sta_iss.store_sta_iss_all_id(), component_property='data')],
     [State(component_id='dropdown-stations', component_property='value')],
-    [State(component_id='init-store-df-old', component_property='data')],
+    # [State(component_id='init-store-df-old', component_property='data')],
     prevent_initial_call=True)
 
-def show_hide_element(n_clicks, data_log, sta,sta_data):
+def show_hide_element(n_clicks, data_log, sta):
     df1 = pd.read_json(StringIO(data_log))
-    df2 = pd.read_json(StringIO(sta_data)) 
+    # df2 = pd.read_json(StringIO(sta_data)) 
+    [df_new, df2] = gen_inst_df(sheet_to_df(sta))
     df = pd.concat([df2,df1], axis = 0)
     df.replace('',None,inplace = True)
     df = df.replace({np.nan: None})

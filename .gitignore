@@ -1,1 +1,2 @@
-/flask_app/credentials.py
+.env
+env

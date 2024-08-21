@@ -12,21 +12,22 @@ layout = html.Div(
         dcc.Dropdown(id="dropdown-inst-swap", multi = True),
         html.Br(),
         dcc.Store(id = 'store-inst-swap-bool'),
-            dbc.Row([
-                dbc.Col([            
-                    dbc.Row(dbc.Button('Add Log', id='button-inst-swap', color = 'danger'),),
-                    ]),
-                    dbc.Col([html.H4(' ')], width = 1),
-                dbc.Col([
-                    html.Div([],id = 'submit-text-swap'),
-                ]),  
-            ]),
-            dbc.Row([html.Div([],id = 'warning-text-inst-swap'),]),
-        ]),
+        dbc.Row([
+            dbc.Col([html.Div([],id = 'div-inst-swap')], width=12, lg=12),
         ]),
         dbc.Row([
-        dbc.Col([html.Div([],id = 'div-inst-swap')], width=12, lg=12),
-        ])
+            dbc.Col([            
+                dbc.Row(dbc.Button('Add Log', id='button-inst-swap', color = 'danger'),),
+                ]),
+                dbc.Col([html.H4(' ')], width = 1),
+            dbc.Col([
+                html.Div([],id = 'submit-text-swap'),
+            ]),  
+        ]),
+        dbc.Row([html.Div([],id = 'warning-text-inst-swap'),]),
+        ]),
+        ]),
+
     ]
 )
 

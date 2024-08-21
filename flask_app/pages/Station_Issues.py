@@ -12,6 +12,9 @@ layout = html.Div(
         dcc.Dropdown(id="dropdown-sta-iss", multi = True),
         html.Br(),
         dcc.Store(id = 'store-sta-iss-bool'),
+        dbc.Row([
+            dbc.Col([html.Div([],id = 'div-sta-iss')], width=12, lg=12),
+        ]),
             dbc.Row([
                 dbc.Col([            
                     dbc.Row(dbc.Button('Add Log', id='button-sta-iss', color = 'danger'),),
@@ -24,9 +27,7 @@ layout = html.Div(
             dbc.Row([html.Div([],id = 'warning-text-sta-iss'),]),
         ]),
         ]),
-        dbc.Row([
-        dbc.Col([html.Div([],id = 'div-sta-iss')], width=12, lg=12),
-        ])
+
     ]
 )
 

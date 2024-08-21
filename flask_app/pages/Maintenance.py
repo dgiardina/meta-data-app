@@ -9,6 +9,9 @@ layout = html.Div(
         dbc.Card([
         dbc.CardBody([
         dcc.Store(id = 'store-inst-mtn-bool'),
+        dbc.Row([
+            dbc.Col([html.Div([],id = 'div-inst-mtn')], width=12, lg=12),
+        ]),
             dbc.Row([
                 dbc.Col([            
                     dbc.Row(dbc.Button('Add Log', id='button-inst-mtn', color = 'danger'),),
@@ -22,9 +25,7 @@ layout = html.Div(
             dbc.Row([html.Div([],id = 'warning-text-inst-mtn'),]),
         ]),
         ]),
-        dbc.Row([
-        dbc.Col([html.Div([],id = 'div-inst-mtn')], width=12, lg=12),
-        ])
+
     ]
 )
 
