@@ -21,6 +21,7 @@ import ast
 load_dotenv()
 GC_JSON = os.getenv('GC_JSON')
 USER_PWD = os.getenv('USER_PWD')
+# print(GC_JSON)
 gc = gspread.service_account_from_dict(ast.literal_eval(GC_JSON))
 
 def sheet_to_df(sheet):
@@ -167,7 +168,7 @@ class instrument_mtn:
             
             df = pd.read_csv('defs/log-defs.csv')
             # df = log_defs()
-            df = df[df['log'].str.contains('maintenance') == True] # get logs associate with mtn
+            df = df[df['log'].str.contains('gen_mtn') == True] # get logs associate with mtn
             df= df[df['log_tags'].str.contains(self.inst.rstrip('_1234567890')) == True] 
             df = df.iloc[:len(df)//2]
             # checklist uses log_desc_name for label, log_desc for value
@@ -182,7 +183,7 @@ class instrument_mtn:
         try:
             df = pd.read_csv('defs/log-defs.csv')
             # df = log_defs()
-            df = df[df['log'].str.contains('maintenance') == True]
+            df = df[df['log'].str.contains('gen_mtn') == True]
             df= df[df['log_tags'].str.contains(self.inst.rstrip('_1234567890')) == True]
             df = df.iloc[len(df)//2:]
             checklist_inst_mtn = dcc.Checklist(options=[{'label' : html.Div(i, style={'font-size': 16, 'paddingLeft': "1rem"}), 'value' : j } for i,j in zip(df['log_desc_name'],df['log_desc'])],
@@ -700,10 +701,12 @@ header = dbc.Card([
                 dbc.Col([
                 dcc.DatePickerSingle(
                     id='dt-single-log',
+                    # display_format="YYYY-MM-DD",
                     min_date_allowed=date(1950, 1, 1),
                     max_date_allowed= dt.date.today()+ timedelta(days=1),
                     initial_visible_month=dt.date.today(),
-                    date=dt.date.today())
+                    date=dt.date.today()
+                    )
                     
                 ],width = 5),
                 dbc.Col([dbc.Input(id='input-time-hh-log', type='number', min=0, max=23, step=1, value = datetime.today().hour, size="md",valid = False)],width = 3),
@@ -719,9 +722,9 @@ header = dbc.Card([
 server = Flask(__name__)
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],suppress_callback_exceptions=True, use_pages=True,server=server)
 
-auth = dash_auth.BasicAuth(
-    app, ast.literal_eval(USER_PWD)
-)
+# auth = dash_auth.BasicAuth(
+#     app, ast.literal_eval(USER_PWD)
+# )
 
 app.layout = dbc.Container([
     dbc.Stack([
@@ -756,6 +759,40 @@ def gen_inst_mtn_cards(station):
     
     return df.to_json()
 
+@app.callback(
+    Output("dt-single-log", "date"),
+    Output("dt-single-log", "min_date_allowed"),
+    Output("dt-single-log", "max_date_allowed"),
+    Output("dt-single-log", "initial_visible_month"),
+    [Input('dropdown-stations', 'value')])
+
+def set_date_picker(_):
+    # print('a')
+    min_date_allowed=dt.date(1950, 1, 1)
+    max_date_allowed= dt.date.today()+ timedelta(days=1)
+    initial_visible_month=dt.date.today()
+    date=dt.date.today()
+
+    return date, min_date_allowed, max_date_allowed,initial_visible_month
+
+@app.callback(
+    Output("input-time-hh-log", "value"),
+    [Input('dropdown-stations', 'value')])
+
+def set_time_picker(_):
+    print('b')
+    value = datetime.today().hour
+    print(type(value))
+    return value +1
+
+@app.callback(
+    Output("input-time-mm-log", "value"),
+    [Input('dropdown-stations', 'value')])
+
+def set_time_picker(_):
+    print('c')
+    value = datetime.today().minute
+    return value
 
 #%% Mtn Callbacks
 
@@ -768,7 +805,7 @@ def gen_inst_mtn_cards(station_data):
     # Generate instrument mtn cards for instruments that require regular mtn tasks
     df = pd.read_json(StringIO(station_data))
     df_logs = pd.read_csv('defs/log-defs.csv')
-    df_logs = df_logs[df_logs['log'].str.contains('maintenance') == True]
+    df_logs = df_logs[df_logs['log'].str.contains('gen_mtn') == True]
     list = df_logs['log_tags'].values.tolist()
     list = [x for xs in list for x in xs.split(',')]
 
@@ -904,14 +941,15 @@ def show_hide_element(log_desc_1, log_desc_2,log_description,report,inst,mdl,sn,
 @app.callback(
     Output(component_id=inst_mtn.store_inst_mtn_all_id(), component_property='data'),
     [Input(component_id={'type': inst_mtn.store_inst_mtn_id()['type'], 'index': ALL}, component_property='data')],
+    [Input(component_id='dropdown-stations', component_property='value')],
     [Input(component_id='dt-single-log', component_property='date')],
     [Input(component_id='input-time-hh-log', component_property='value')],
     [Input(component_id='input-time-mm-log', component_property='value')],
-    [Input(component_id='dropdown-stations', component_property='value')],
-    [Input(component_id='dropdown-tech', component_property='value')],    
-    )
+    [Input(component_id='dropdown-tech', component_property='value')],  
+    prevent_initial_call=True)
 
-def show_hide_element(log_desc,dt_single_log,hh_log,mm_log,sta,tech):
+# def show_hide_element(log_desc,dt_single_log,hh_log,mm_log,sta,tech):
+def show_hide_element(log_desc,sta,dt_single_log,hh_log,mm_log,tech):
     if log_desc is None:
         raise PreventUpdate
     elif dt_single_log is None:
@@ -1173,14 +1211,14 @@ def show_hide_element(mdl_swap,sn_swap,coef_swap,report,inst,mdl,sn,coef,ht,pos,
 @app.callback(
     Output(component_id=inst_swap.store_inst_swap_all_id(), component_property='data'),
     [Input(component_id={'type': inst_swap.store_inst_swap_id()['type'], 'index': ALL}, component_property='data')],
+    [Input(component_id='dropdown-stations', component_property='value')],
     [Input(component_id='dt-single-log', component_property='date')],
     [Input(component_id='input-time-hh-log', component_property='value')],
     [Input(component_id='input-time-mm-log', component_property='value')],
-    [Input(component_id='dropdown-stations', component_property='value')],
     [Input(component_id='dropdown-tech', component_property='value')],    
     )
 
-def show_hide_element(inst_swap,dt_single_log,hh_log,mm_log,sta,tech):
+def show_hide_element(inst_swap,sta,dt_single_log,hh_log,mm_log,tech):
     
     if inst_swap is None:
         raise PreventUpdate
@@ -1252,7 +1290,10 @@ def show_hide_element(inst_log,dt_single_log,hh_log,mm_log,tech):
         for i in range(len(df.index)):
             df_reg2 = df_reg[df_reg['inst_mdl'].str.contains(df['log_desc'].str.split(pat="/")[i][0]) == True]
             pattern_inst = r'{}'.format(df_reg2['inst_verification'].iloc[0])
+            print(pattern_inst)
             match = re.search(pattern_inst,df['log_desc'][i])
+            print(df['log_desc'][i])
+            print(match)
             if match:
                 a = a
             else:
@@ -1356,7 +1397,7 @@ def show_hide_element(n_clicks, data_log, sta):
 
 def show_hide_element(sta_data): 
     df = pd.read_json(StringIO(sta_data))
-    df = df.iloc[1:]
+    # df = df.iloc[1:]
     options=[{'label' : html.Div(i, style={'font-size': 15}), 'value' : j } for i,j in zip(df['inst_name'],df['inst_id'])]
     return options
 
@@ -1367,7 +1408,7 @@ def show_hide_element(sta_data):
 def show_hide_element(sta_data): 
     try:
         df = pd.read_json(StringIO(sta_data))
-        df = df.iloc[1:]
+        # df = df.iloc[1:]
         value = df['inst_id'].iloc[0]
         return value
     except:
@@ -1538,14 +1579,15 @@ def show_hide_element(log_iss,log_yn,log_desc,log_start_dt,log_end_dt,log_start_
 @app.callback(
     Output(component_id=sta_iss.store_sta_iss_all_id(), component_property='data'),
     [Input(component_id={'type': sta_iss.store_sta_iss_id()['type'], 'index': ALL}, component_property='data')],
+    [Input(component_id='dropdown-stations', component_property='value')],
     [Input(component_id='dt-single-log', component_property='date')],
     [Input(component_id='input-time-hh-log', component_property='value')],
     [Input(component_id='input-time-mm-log', component_property='value')],
-    [Input(component_id='dropdown-stations', component_property='value')],
+    
     [Input(component_id='dropdown-tech', component_property='value')],    
     )
 
-def show_hide_element(sta_iss,dt_single_log,hh_log,mm_log,sta,tech):
+def show_hide_element(sta_iss,sta,dt_single_log,hh_log,mm_log,tech):
     
     if sta_iss is None:
         raise PreventUpdate

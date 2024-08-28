@@ -1,25 +1,25 @@
 log,log_desc,log_desc_name,log_tags
-maintenance,Ornt,Instrument Oriented,WSWD
-maintenance,Lvl,Instrument Level,"Rnet,WSWD,RF"
-maintenance,Clean,Instrument Clean,"Rnet,RF,TRH"
-maintenance,TRH_head,New Sensor Head,TRH
-maintenance,Veg,Clear Vegitation,Station
-maintenance,Dssc,Replace Desiccant,"Station,Sage"
-maintenance,Paint,Paint Logger Box,Station
-maintenance,Seal,Reseal Box,Station
-maintenance,Data,Collect SD Card Data,Station
-maintenance,Clock,Set Time,Station
-site_iss,L_wire,Loose Wire,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard"
+gen_mtn,Ornt,Instrument Oriented,WSWD
+gen_mtn,Lvl,Instrument Level,"Rnet,WSWD,RF"
+gen_mtn,Clean,Instrument Clean,"Rnet,RF,TRH"
+gen_mtn,TRH_head,New Sensor Head,TRH
+gen_mtn,Veg,Clear Vegitation,Station
+gen_mtn,Dssc,Replace Desiccant,"Station,Sage"
+gen_mtn,Paint,Paint Logger Box,Station
+gen_mtn,Seal,Reseal Box,Station
+gen_mtn,Data,Collect SD Card Data,Station
+gen_mtn,Clock,Set Time,Station
+site_iss,L_wire,Loose Wire,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard,Sage"
+site_iss,D_wire,Damaged Wire,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard,Sage"
 site_iss,Lvl_inst,Instrument Leveling,"Rnet,WSWD,RF"
 site_iss,Ornt_inst,Instrument Orientation,"WSWD,CellAnt,SolarPanel"
 site_iss,Clean_inst,Instrument Fouling,"Rnet,RF,TRH,Panel,WSWD"
+site_iss,Box_rh,High Box Humidity,Station
+site_iss,D_data,Bad Data,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard,Sage"
 site_iss,Bugs,Bugs,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard,Sage"
 site_iss,Other,Other,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard,Sage"
-,,,
-,,,
 inst_iss,Other,Other,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard,Sage"
 inst_iss,Dmg_inst,Instrument Damaged,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard,Sage"
 inst_iss,D_wire,Damaged Wire,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard,Sage"
-,,,
-,,,
 inst_iss,D_sta,Damaged Hardware,Station
+inst_iss,D_data,Bad Data,"Rnet,WSWD,TRH,RF,Logger,SM,Tsoil,SHF,ChargeReg,Battery,SolarPanel,RHenc,CellAnt,CellMdm,Baro,BVCard,Sage"
