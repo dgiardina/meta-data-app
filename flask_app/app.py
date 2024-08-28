@@ -722,9 +722,9 @@ header = dbc.Card([
 server = Flask(__name__)
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],suppress_callback_exceptions=True, use_pages=True,server=server)
 
-# auth = dash_auth.BasicAuth(
-#     app, ast.literal_eval(USER_PWD)
-# )
+auth = dash_auth.BasicAuth(
+    app, ast.literal_eval(USER_PWD)
+)
 
 app.layout = dbc.Container([
     dbc.Stack([
@@ -780,17 +780,15 @@ def set_date_picker(_):
     [Input('dropdown-stations', 'value')])
 
 def set_time_picker(_):
-    print('b')
+   
     value = datetime.today().hour
-    print(type(value))
-    return value +1
+    return value
 
 @app.callback(
     Output("input-time-mm-log", "value"),
     [Input('dropdown-stations', 'value')])
 
 def set_time_picker(_):
-    print('c')
     value = datetime.today().minute
     return value
 
